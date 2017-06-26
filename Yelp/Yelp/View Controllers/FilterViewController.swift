@@ -9,8 +9,11 @@
 import UIKit
 
 var categoriesSwitchStates = [Int: Bool]()
+var dealSwitchStates = false
+var distanceSwitchStates = [Int: Bool]()
+var sortSwitchStates = [Int: Bool]()
 protocol  FilterViewControllerDelegate {
-  func filterViewController(filterVC: FilterViewController, didUpdateFilters filters: [String])
+  func filterViewController(filterVC: FilterViewController, didUpdateFilters filters: [String:AnyObject])
 }
 class FilterViewController: UIViewController {
 
@@ -187,14 +190,21 @@ class FilterViewController: UIViewController {
      ["name" : "Wok", "code": "wok"],
      ["name" : "Wraps", "code": "wraps"],
      ["name" : "Yugoslav", "code": "yugoslav"]]
-  var distanceList = ["Auto", "1 km", "3 km", "5 km", "10 km"]
+  
+  var distanceList = ["Auto", "1 mile", "3 mile", "5 mile", "10 mile"]
   var distanceListValue = [0, 1000, 3000, 5000, 10000]
+  var selectedDistance = 0
   var sortByList = ["Best Matched", "Distance", "Highest Rated"]
   var selectedSortBy = 0
-  var isExpandingCategories = false
+  var filters = [String:AnyObject]()
+  
 
   
-    let currentSwitchstates = categoriesSwitchStates  // captured the current state, need to recover in case user cancel filter
+    let curCategorySwitchstates = categoriesSwitchStates  // captured the current state, need to recover in case user cancel filter
+    let curDistanceSwitchstates = distanceSwitchStates
+    let curDealSwitchStates = dealSwitchStates
+    let curSortSwitchStates = sortSwitchStates
+  
     override func viewDidLoad() {
       
         super.viewDidLoad()
@@ -212,23 +222,40 @@ class FilterViewController: UIViewController {
     }
   
   @IBAction func onCancle(_ sender: UIBarButtonItem) {
-    categoriesSwitchStates = currentSwitchstates
+    categoriesSwitchStates = curCategorySwitchstates
+    distanceSwitchStates = curDistanceSwitchstates
+    dealSwitchStates = curDealSwitchStates
+    sortSwitchStates = curSortSwitchStates
     dismiss(animated: true, completion: nil)
   }
 
   @IBAction func onSave(_ sender: UIBarButtonItem) {
     
-    // update
-    var filters = [String]()
-    for (row, isSelected) in categoriesSwitchStates
-    {
-      if isSelected{
-        filters.append(categories[row]["code"]!)
+    dismiss(animated: true, completion: nil)
+    var selectedCategories = [String]()
+    var selectedCategoriesIdx = [Int]()
+    for (row, isSelected) in categoriesSwitchStates {
+      if isSelected {
+        selectedCategories.append(categories[row]["code"]!)
+        selectedCategoriesIdx.append(row)
       }
     }
+    filters["categories"] = selectedCategories as AnyObject?
+    filters["categoriesIdx"] = selectedCategoriesIdx as AnyObject?
+    
+    filters["sortBy"] = selectedSortBy as AnyObject?
+    filters["deal"] = dealSwitchStates as AnyObject?
+    if selectedDistance == 0 {
+      filters["distance"] = nil
+    } else {
+      filters["distance"] = distanceListValue[selectedDistance] as AnyObject?
+    }
+    filters["distanceIdx"] = selectedDistance as AnyObject?
+    
+    print(filters)
     delegate.filterViewController(filterVC: self, didUpdateFilters: filters)
 
-    dismiss(animated: true, completion: nil)
+
   }
     /*
     // MARK: - Navigation
@@ -257,21 +284,24 @@ extension FilterViewController: UITableViewDataSource, UITableViewDelegate, Swit
     switch indexPath.section {
     // Deal
     case 0:
-      let cell = tableView.dequeueReusableCell(withIdentifier: "checkBoxCell", for: indexPath) as! CheckBoxCell
-      cell.checkBoxLabel.text = "Offerring a deal"
-//      cell.delegate = self
+      let cell = tableView.dequeueReusableCell(withIdentifier: "switchCell", for: indexPath) as! SwitchsCell
+      cell.categoryLabel.text = "Offerring a deal"
+      cell.switchButton.isOn = dealSwitchStates
       return cell
       
     // Distance
     case 1:
-      let cell = tableView.dequeueReusableCell(withIdentifier: "checkBoxCell", for: indexPath) as! CheckBoxCell
-      cell.checkBoxLabel.text = distanceList[indexPath.row]
+      let cell = tableView.dequeueReusableCell(withIdentifier: "switchCell", for: indexPath) as! SwitchsCell
+      cell.categoryLabel.text = distanceList[indexPath.row]
+      cell.switchButton.isOn = distanceSwitchStates[indexPath.row] ?? false
+
       return cell
       
     // Sort by
     case 2:
-      let cell = tableView.dequeueReusableCell(withIdentifier: "checkBoxCell", for: indexPath) as! CheckBoxCell
-      cell.checkBoxLabel.text = sortByList[indexPath.row]
+      let cell = tableView.dequeueReusableCell(withIdentifier: "switchCell", for: indexPath) as! SwitchsCell
+      cell.categoryLabel.text = sortByList[indexPath.row]
+      cell.switchButton.isOn = sortSwitchStates[indexPath.row] ?? false
       return cell
       
     case 3:
@@ -316,8 +346,56 @@ extension FilterViewController: UITableViewDataSource, UITableViewDelegate, Swit
     return 44
   }
   
-  func switchCell(switchCell: SwitchsCell, didChangeValue value: Bool) {
-    let ip = tableView.indexPath(for: switchCell)
-    categoriesSwitchStates[(ip?.row)!] = value
+  func switchCell( switchCell: SwitchsCell, didChangeValue value: Bool) {
+    let ip = tableView.indexPath(for: switchCell)!
+    let section = (tableView.indexPath(for: switchCell)?.section)!
+    var reload = false
+    switch section {
+    case 0:
+        dealSwitchStates = value
+    case 1:
+        distanceSwitchStates[(ip.row)] = value
+        
+        if (value == true)
+        {
+          for idx in 0...distanceList.count{
+            if ((idx != ip.row) && distanceSwitchStates[idx] == true){
+              distanceSwitchStates[idx] = false
+              reload = true
+            }
+          }
+          selectedDistance = (ip.row)
+        }
+      if (reload)
+      {
+        tableView.reloadSections(IndexSet(integer: section), with: .automatic)
+      }
+      reload = false
+      
+    case 2:
+        sortSwitchStates[(ip.row)] = value
+        
+        if (value == true)
+        {
+          for idx in 0...sortByList.count{
+            if ((idx != ip.row) && sortSwitchStates[idx] == true){
+              sortSwitchStates[idx] = false
+              reload = true
+            }
+          }
+          selectedSortBy = (ip.row)
+        }
+      
+        if (reload)
+        {
+          tableView.reloadSections(IndexSet(integer: section), with: .automatic)
+        }
+        reload = false
+    case 3:
+       categoriesSwitchStates[(ip.row)] = value
+    default: break
+    }
+
+    print("detected row index \(ip.row) \(section)")
   }
 }
