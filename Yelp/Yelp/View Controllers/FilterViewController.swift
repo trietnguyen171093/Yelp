@@ -8,8 +8,7 @@
 
 import UIKit
 
-
-var switchstates = [Int: Bool]()
+var categoriesSwitchStates = [Int: Bool]()
 protocol  FilterViewControllerDelegate {
   func filterViewController(filterVC: FilterViewController, didUpdateFilters filters: [String])
 }
@@ -188,9 +187,14 @@ class FilterViewController: UIViewController {
      ["name" : "Wok", "code": "wok"],
      ["name" : "Wraps", "code": "wraps"],
      ["name" : "Yugoslav", "code": "yugoslav"]]
+  var distanceList = ["Auto", "1 km", "3 km", "5 km", "10 km"]
+  var distanceListValue = [0, 1000, 3000, 5000, 10000]
+  var sortByList = ["Best Matched", "Distance", "Highest Rated"]
+  var selectedSortBy = 0
+  var isExpandingCategories = false
+
   
-  
-    let currentSwitchstates = switchstates  // captured the current state, need to recover in case user cancel filter
+    let currentSwitchstates = categoriesSwitchStates  // captured the current state, need to recover in case user cancel filter
     override func viewDidLoad() {
       
         super.viewDidLoad()
@@ -208,7 +212,7 @@ class FilterViewController: UIViewController {
     }
   
   @IBAction func onCancle(_ sender: UIBarButtonItem) {
-    switchstates = currentSwitchstates
+    categoriesSwitchStates = currentSwitchstates
     dismiss(animated: true, completion: nil)
   }
 
@@ -216,16 +220,14 @@ class FilterViewController: UIViewController {
     
     // update
     var filters = [String]()
-    for (row, isSelected) in switchstates
+    for (row, isSelected) in categoriesSwitchStates
     {
       if isSelected{
         filters.append(categories[row]["code"]!)
       }
     }
-    
-    if filters.count > 0{
-      delegate.filterViewController(filterVC: self, didUpdateFilters: filters)
-    }
+    delegate.filterViewController(filterVC: self, didUpdateFilters: filters)
+
     dismiss(animated: true, completion: nil)
   }
     /*
@@ -242,19 +244,80 @@ class FilterViewController: UIViewController {
 extension FilterViewController: UITableViewDataSource, UITableViewDelegate, SwitchCellDelegate{
 
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return categories.count
+
+    switch section {
+    case 0: return 1
+    case 1: return distanceList.count
+    case 2: return sortByList.count
+    case 3: return categories.count
+    default: return 0
+    }
   }
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-    let cell = tableView.dequeueReusableCell(withIdentifier: "switchCell", for: indexPath) as! SwitchsCell
-    cell.categoryLabel.text = categories[indexPath.row]["name"]
-    cell.switchButton.isOn = switchstates[indexPath.row] ?? false
-    cell.delegate = self
-    return cell
+    switch indexPath.section {
+    // Deal
+    case 0:
+      let cell = tableView.dequeueReusableCell(withIdentifier: "checkBoxCell", for: indexPath) as! CheckBoxCell
+      cell.checkBoxLabel.text = "Offerring a deal"
+//      cell.delegate = self
+      return cell
+      
+    // Distance
+    case 1:
+      let cell = tableView.dequeueReusableCell(withIdentifier: "checkBoxCell", for: indexPath) as! CheckBoxCell
+      cell.checkBoxLabel.text = distanceList[indexPath.row]
+      return cell
+      
+    // Sort by
+    case 2:
+      let cell = tableView.dequeueReusableCell(withIdentifier: "checkBoxCell", for: indexPath) as! CheckBoxCell
+      cell.checkBoxLabel.text = sortByList[indexPath.row]
+      return cell
+      
+    case 3:
+      let cell = tableView.dequeueReusableCell(withIdentifier: "switchCell", for: indexPath) as! SwitchsCell
+      cell.categoryLabel.text = categories[indexPath.row]["name"]
+      cell.delegate = self
+      cell.switchButton.isOn = categoriesSwitchStates[indexPath.row] ?? false
+      return cell
+
+    default:
+      return UITableViewCell()
+    }
+
+  }
+  func numberOfSections(in tableView: UITableView) -> Int {
+    return 4
+  }
+  
+  func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+    let headerView = UIView()
+    var headerTitle = UILabel()
+    headerTitle = UILabel(frame: CGRect(x: 15, y: 15, width: 200, height: 35))
+    switch section {
+    case 0: headerTitle.text = "Deal"
+    case 1: headerTitle.text = "Distance"
+    case 2: headerTitle.text = "Sort by"
+    case 3: headerTitle.text = "Categories"
+    default: headerTitle.text = ""
+    }
+    headerTitle.textColor = UIColor(red: 0, green: 0.7, blue: 0, alpha: 1)
+    headerView.addSubview(headerTitle)
+    headerView.backgroundColor = UIColor(red: 1, green: 1, blue: 1, alpha: 1)
+    
+    return headerView
+  }
+  
+  func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+    return 42
+  }
+  
+  func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+    return 44
   }
   
   func switchCell(switchCell: SwitchsCell, didChangeValue value: Bool) {
-//    let ip = tableView.indexPathForSelectedRow
     let ip = tableView.indexPath(for: switchCell)
-    switchstates[(ip?.row)!] = value
+    categoriesSwitchStates[(ip?.row)!] = value
   }
 }

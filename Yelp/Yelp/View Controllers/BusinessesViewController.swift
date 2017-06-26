@@ -86,7 +86,6 @@ extension BusinessesViewController: UITableViewDelegate, UITableViewDataSource, 
   
   func filterViewController(filterVC: FilterViewController, didUpdateFilters filters: [String]) {
     print("I get new filter from VC")
-    
     Business.search(with: "", sort: nil, categories: filters, deals: nil) { (businesses: [Business]?, error: Error?) in
       if let businesses = businesses {
         self.businesses = businesses
@@ -114,7 +113,6 @@ extension BusinessesViewController: UISearchBarDelegate {
   }
   
   func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-//    searchSettings.searchString = searchBar.text
     searchBar.resignFirstResponder()
     Business.search(with: searchBar.text!, sort: nil, categories: nil, deals: nil) { (businesses: [Business]?, error: Error?) in
       if let businesses = businesses {
