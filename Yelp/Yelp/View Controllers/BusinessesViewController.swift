@@ -11,10 +11,22 @@ import UIKit
 class BusinessesViewController: UIViewController {
 
   @IBOutlet weak var tableView: UITableView!
+  
+    var searchBar: UISearchBar!
+//    var searchSettings = GithubRepoSearchSettings()
     var businesses: [Business]!
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+      // Initialize the UISearchBar
+      searchBar = UISearchBar()
+      searchBar.delegate = self
+      
+      // Add SearchBar to the NavigationBar
+      searchBar.sizeToFit()
+      navigationItem.titleView = searchBar
+      
       tableView.delegate = self
       tableView.dataSource = self
       tableView.estimatedRowHeight = 100
@@ -32,6 +44,7 @@ class BusinessesViewController: UIViewController {
             }
           self.tableView.reloadData()
         }
+      
 
         // Example of Yelp search with more search options specified
         /*
@@ -78,7 +91,35 @@ extension BusinessesViewController: UITableViewDelegate, UITableViewDataSource, 
       if let businesses = businesses {
         self.businesses = businesses
         self.tableView.reloadData()
-    
+      }
+    }
+  }
+}
+// SearchBar methods
+extension BusinessesViewController: UISearchBarDelegate {
+  
+  func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {
+    searchBar.setShowsCancelButton(true, animated: true)
+    return true
+  }
+  
+  func searchBarShouldEndEditing(_ searchBar: UISearchBar) -> Bool {
+    searchBar.setShowsCancelButton(false, animated: true)
+    return true
+  }
+  
+  func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+    searchBar.text = ""
+    searchBar.resignFirstResponder()
+  }
+  
+  func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+//    searchSettings.searchString = searchBar.text
+    searchBar.resignFirstResponder()
+    Business.search(with: searchBar.text!, sort: nil, categories: nil, deals: nil) { (businesses: [Business]?, error: Error?) in
+      if let businesses = businesses {
+        self.businesses = businesses
+        self.tableView.reloadData()
       }
     }
   }

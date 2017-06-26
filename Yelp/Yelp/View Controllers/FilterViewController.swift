@@ -8,6 +8,8 @@
 
 import UIKit
 
+
+var switchstates = [Int: Bool]()
 protocol  FilterViewControllerDelegate {
   func filterViewController(filterVC: FilterViewController, didUpdateFilters filters: [String])
 }
@@ -187,7 +189,8 @@ class FilterViewController: UIViewController {
      ["name" : "Wraps", "code": "wraps"],
      ["name" : "Yugoslav", "code": "yugoslav"]]
   
-  var switchstates = [Int: Bool]()
+  
+    let currentSwitchstates = switchstates  // captured the current state, need to recover in case user cancel filter
     override func viewDidLoad() {
       
         super.viewDidLoad()
@@ -196,6 +199,7 @@ class FilterViewController: UIViewController {
       tableView.delegate = self
       tableView.dataSource = self
 //        tableView.reloadData()
+      
     }
 
     override func didReceiveMemoryWarning() {
@@ -204,6 +208,7 @@ class FilterViewController: UIViewController {
     }
   
   @IBAction func onCancle(_ sender: UIBarButtonItem) {
+    switchstates = currentSwitchstates
     dismiss(animated: true, completion: nil)
   }
 
