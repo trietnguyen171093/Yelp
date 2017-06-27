@@ -85,20 +85,6 @@ extension BusinessesViewController: UITableViewDelegate, UITableViewDataSource, 
     return cell
   }
   
-  func filterViewController(filterVC: FilterViewController, didUpdateFilters filters: [String:AnyObject]) {
-    
-      print("I get new filter from VC")
-      let categories = (filters["categories"] as? [String])!
-      let sortBy = (filters["sortBy"] as? Int)!
-      let deals = (filters["deal"] as? Bool)
-    
-      Business.search(with: "", sort: YelpSortMode(rawValue: sortBy), categories: categories, deals: deals) { (businesses: [Business]?, error: Error?) in
-      if let businesses = businesses {
-        self.businesses = businesses
-        self.tableView.reloadData()
-      }
-    }
-  }
   
   func filterViewController(filterVC: FilterViewController, deal deal_: Bool, sortby sort_: Int , category category_: [String]){
     print("I get new filter from VC")
