@@ -13,7 +13,7 @@ var dealSwitchStates = false
 var distanceSwitchStates = [Int: Bool]()
 var sortSwitchStates = [Int: Bool]()
 protocol  FilterViewControllerDelegate {
-  func filterViewController(filterVC: FilterViewController, didUpdateFilters filters: [String:AnyObject])
+  func filterViewController(filterVC: FilterViewController, deal deal_: Bool, sortby sort_: Int , category category_: [String])
 }
 class FilterViewController: UIViewController {
 
@@ -192,7 +192,6 @@ class FilterViewController: UIViewController {
      ["name" : "Yugoslav", "code": "yugoslav"]]
   
   var distanceList = ["Auto", "1 mile", "3 mile", "5 mile", "10 mile"]
-  var distanceListValue = [0, 1000, 3000, 5000, 10000]
   var selectedDistance = 0
   var sortByList = ["Best Matched", "Distance", "Highest Rated"]
   var selectedSortBy = 0
@@ -240,22 +239,7 @@ class FilterViewController: UIViewController {
         selectedCategoriesIdx.append(row)
       }
     }
-    filters["categories"] = selectedCategories as AnyObject?
-    filters["categoriesIdx"] = selectedCategoriesIdx as AnyObject?
-    
-    filters["sortBy"] = selectedSortBy as AnyObject?
-    filters["deal"] = dealSwitchStates as AnyObject?
-    if selectedDistance == 0 {
-      filters["distance"] = nil
-    } else {
-      filters["distance"] = distanceListValue[selectedDistance] as AnyObject?
-    }
-    filters["distanceIdx"] = selectedDistance as AnyObject?
-    
-    print(filters)
-    delegate.filterViewController(filterVC: self, didUpdateFilters: filters)
-
-
+    delegate.filterViewController(filterVC: self, deal : dealSwitchStates, sortby : selectedSortBy  , category : selectedCategories)
   }
     /*
     // MARK: - Navigation

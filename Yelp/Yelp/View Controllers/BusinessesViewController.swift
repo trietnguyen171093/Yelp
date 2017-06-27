@@ -99,6 +99,21 @@ extension BusinessesViewController: UITableViewDelegate, UITableViewDataSource, 
       }
     }
   }
+  
+  func filterViewController(filterVC: FilterViewController, deal deal_: Bool, sortby sort_: Int , category category_: [String]){
+    print("I get new filter from VC")
+    let categories = category_
+    let sortBy =  sort_
+    let deals = deal_
+    
+    Business.search(with: "", sort: YelpSortMode(rawValue: sortBy), categories: categories, deals: deals) { (businesses: [Business]?, error: Error?) in
+      if let businesses = businesses {
+        self.businesses = businesses
+        self.tableView.reloadData()
+      }
+    }
+  
+  }
 }
 // SearchBar methods
 extension BusinessesViewController: UISearchBarDelegate {
