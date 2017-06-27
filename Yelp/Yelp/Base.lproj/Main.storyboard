@@ -193,33 +193,6 @@
                                             <outlet property="switchButton" destination="Ja5-z7-3zR" id="PI2-xs-DrP"/>
                                         </connections>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="checkBoxCell" id="25e-RE-rXm" customClass="CheckBoxCell" customModule="Yelp" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="72" width="320" height="44"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="25e-RE-rXm" id="cgg-CS-8Ro">
-                                            <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aRQ-Dn-pmc">
-                                                    <rect key="frame" x="18" y="10" width="200" height="24"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="height" constant="24" id="KrF-DR-e7h"/>
-                                                        <constraint firstAttribute="width" constant="200" id="kg0-fh-nGR"/>
-                                                    </constraints>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                    <nil key="textColor"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                            </subviews>
-                                            <constraints>
-                                                <constraint firstItem="aRQ-Dn-pmc" firstAttribute="centerY" secondItem="cgg-CS-8Ro" secondAttribute="centerY" id="6Xv-Io-tlD"/>
-                                                <constraint firstItem="aRQ-Dn-pmc" firstAttribute="leading" secondItem="cgg-CS-8Ro" secondAttribute="leadingMargin" constant="10" id="vdr-l0-BF2"/>
-                                            </constraints>
-                                        </tableViewCellContentView>
-                                        <connections>
-                                            <outlet property="checkBoxLabel" destination="aRQ-Dn-pmc" id="git-fA-daK"/>
-                                        </connections>
-                                    </tableViewCell>
                                 </prototypes>
                             </tableView>
                         </subviews>
